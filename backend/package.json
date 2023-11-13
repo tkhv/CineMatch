@@ -1,0 +1,19 @@
+{
+	"name": "backend",
+	"version": "1.0.0",
+	"description": "Backend for CineMatch",
+	"main": "index.js",
+	"scripts": {
+		"start": "nodemon index.js",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"author": "Chidozie Nnaduruaku",
+	"license": "ISC",
+	"dependencies": {
+		"express": "^4.18.2",
+    "firebase-admin": "^11.11.0"
+	},
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}
