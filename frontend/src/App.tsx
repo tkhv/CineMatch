@@ -1,7 +1,5 @@
-import Layout from "./layout";
-
 function App() {
-  return <Layout />;
+  return <div>hello world</div>;
 }
 
 export default App;
