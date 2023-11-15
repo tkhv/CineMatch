@@ -45,6 +45,7 @@ export default function AuthPage() {
     ) {
       setError("");
       // loginMode ? loginHandler(submittedData) : signupHandler(submittedData);
+      navigate("/home"); // Comment out when backend is ready
     } else {
       setError("Invalid username or password.");
     }
