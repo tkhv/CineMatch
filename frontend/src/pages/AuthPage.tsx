@@ -1,93 +1,181 @@
 import * as React from "react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-import { Button, TextField, Paper, Box, Grid, Typography } from "@mui/material";
+import styles from "./AuthPage.module.css";
+
+import { Button, TextField, Box, Typography } from "@mui/material";
 
 export default function AuthPage() {
+  const navigate = useNavigate();
+
+  const [loginMode, setLoginMode] = useState(true);
+  const signInLabel = loginMode ? "Sign In" : "Sign Up";
+  const newUserLabel = loginMode ? "New User?" : "Back to Sign In";
+
+  const [error, setError] = useState("");
+
+  interface submitData {
+    username: string;
+    password: string;
+    retypedPassword?: string;
+  }
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
+    const submittedData: submitData = {
+      username: (data.get("username") as string)!.replace(/\s/g, ""),
+      password: (data.get("password") as string)!.replace(/\s/g, ""),
+    };
+
+    if (!loginMode) {
+      submittedData.retypedPassword = (data.get(
+        "retypedPassword"
+      ) as string)!.replace(/\s/g, "");
+    }
+
+    console.log(submittedData);
+
+    if (
+      // input validation
+      submittedData.username.length > 0 &&
+      submittedData.password.length > 0 &&
+      (loginMode || submittedData.password === submittedData.retypedPassword)
+    ) {
+      setError("");
+      // loginMode ? loginHandler(submittedData) : signupHandler(submittedData);
+    } else {
+      setError("Invalid username or password.");
+    }
+  };
+
+  const loginHandler = async (submittedData: submitData) => {
+    try {
+      const res = await fetch("{% url 'api:user-login' %}", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: submittedData.username,
+          password: submittedData.password,
+        }),
+      });
+      let status = await res.json();
+      if (status.message) {
+        setError("Invalid username or password.");
+      } else {
+        console.log("SUCCESS");
+        setError("");
+        navigate("/dashboard");
+      }
+    } catch (err) {
+      setError("Invalid username or password.");
+      console.log(err);
+    }
+  };
+
+  const signupHandler = async (submittedData: submitData) => {
+    try {
+      const res = await fetch(
+        "https://project1cs3300.ue.r.appspot.com/api/user/signup",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: submittedData.username,
+            password: submittedData.password,
+          }),
+        }
+      );
+      let status = await res.json();
+      if (status.message === "user already exists") {
+        console.log(status);
+        setError("User already exists.");
+      } else {
+        console.log("SUCCESS");
+        setError("");
+        setLoginMode(true);
+      }
+    } catch (err) {
+      setError("User already exists.");
+      console.log(err);
+    }
+  };
+
+  const switchModeHandler = () => {
+    setLoginMode((loginMode) => !loginMode);
+    setError("");
   };
 
   return (
-    <Grid container component="main" sx={{ height: "100vh" }}>
-      <Grid
-        item
-        xs={false}
-        sm={4}
-        md={7}
+    <div className={styles.bg}>
+      <Box
         sx={{
-          backgroundImage:
-            "url(https://lukedowding.com/wp-content/uploads/Blade-Runner-2049-frame-4k-213.jpg)",
-          backgroundRepeat: "no-repeat",
-          backgroundColor: (t) =>
-            t.palette.mode === "light"
-              ? t.palette.grey[50]
-              : t.palette.grey[900],
-          backgroundSize: "cover",
-          backgroundPosition: "center",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          width: "25%",
+          height: "50%",
+          background: "rgba(0,0,0,0.90)",
+          padding: "5%",
+          boxShadow: "0 10px 50px 5px rgba(206,108,2,1)",
+          borderRadius: "10px",
+          marginLeft: "3%",
         }}
-      />
-      <Grid
-        item
-        sx={{ backgroundColor: "rgba(0, 0, 0, 0.2)" }}
-        md={5}
-        component={Paper}
-        elevation={6}
-        square
       >
-        <Box
-          sx={{
-            my: 8,
-            mx: 4,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
-        >
-          <Typography component="h1" variant="h5">
-            Sign in
-          </Typography>
-          <Box
-            component="form"
-            noValidate
-            onSubmit={handleSubmit}
-            sx={{ mt: 1 }}
-          >
+        <Typography component="h1" variant="h5" color={"White"}>
+          CineMatch
+        </Typography>
+        <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
+          <TextField
+            margin="normal"
+            fullWidth
+            id="username"
+            label="Username"
+            name="username"
+          />
+          <TextField
+            margin="normal"
+            fullWidth
+            name="password"
+            label="Password"
+            type="password"
+            id="password"
+          />
+          {!loginMode && (
             <TextField
               margin="normal"
               required
               fullWidth
-              id="email"
-              label="Email Address"
-              name="email"
-              autoComplete="email"
-              autoFocus
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Password"
+              name="retypedPassword"
+              label="Retype Password"
               type="password"
-              id="password"
-              autoComplete="current-password"
+              id="retypedPassword"
             />
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-            >
-              Sign In
-            </Button>
-          </Box>
+          )}
+
+          <Typography component="h1" variant="h5" color={"White"}>
+            {error}
+          </Typography>
+
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3, mb: 2 }}
+          >
+            {signInLabel}
+          </Button>
         </Box>
-      </Grid>
-    </Grid>
+
+        <Button type="submit" variant="text" onClick={switchModeHandler}>
+          {newUserLabel}
+        </Button>
+      </Box>
+    </div>
   );
 }
