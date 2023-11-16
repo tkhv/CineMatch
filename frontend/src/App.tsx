@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 
 import AuthPage from "./pages/AuthPage";
+import RatePage from "./pages/RatePage";
 
 const theme = createTheme({
   palette: {
@@ -70,7 +71,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<AuthPage />} />
-          <Route path="/home" element={<h1>Home</h1>} />
+          <Route path="/rate" element={<RatePage />} />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>
