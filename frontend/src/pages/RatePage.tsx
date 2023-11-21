@@ -1,18 +1,17 @@
 import {
-  AppBar,
   Button,
   Card,
   CardActions,
   CardContent,
   CardHeader,
   Container,
-  Link,
-  Toolbar,
   Tooltip,
   Typography,
 } from "@mui/material";
 
 import { ThumbUp, ThumbDown, VisibilityOff } from "@mui/icons-material";
+
+import Navbar from "./components/Navbar";
 
 export default function RatePage() {
   return (
@@ -23,47 +22,6 @@ export default function RatePage() {
         alignItems: "center",
       }}
     >
-      <AppBar
-        position="static"
-        color="default"
-        elevation={0}
-        sx={{ borderBottom: (theme) => `1px solid ${theme.palette.divider}` }}
-      >
-        <Toolbar sx={{ flexWrap: "wrap" }}>
-          <Typography variant="h6" color="inherit" noWrap sx={{ flexGrow: 1 }}>
-            CineMatch
-          </Typography>
-          <nav>
-            <Link
-              variant="button"
-              color="text.primary"
-              href="/rate"
-              sx={{ my: 1, mx: 1.5 }}
-            >
-              Rate
-            </Link>
-            <Link
-              variant="button"
-              color="text.primary"
-              href="#"
-              sx={{ my: 1, mx: 1.5 }}
-            >
-              Browse
-            </Link>
-            <Link
-              variant="button"
-              color="text.primary"
-              href="#"
-              sx={{ my: 1, mx: 1.5 }}
-            >
-              Party
-            </Link>
-          </nav>
-          <Button href="/" variant="outlined" sx={{ my: 1, mx: 1.5 }}>
-            Logout
-          </Button>
-        </Toolbar>
-      </AppBar>
       <Container
         disableGutters
         maxWidth="sm"

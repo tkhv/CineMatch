@@ -3,6 +3,7 @@ import { ThemeProvider, createTheme } from "@mui/material/styles";
 
 import AuthPage from "./pages/AuthPage";
 import RatePage from "./pages/RatePage";
+import Navbar from "./pages/components/Navbar";
 
 const theme = createTheme({
   palette: {
@@ -69,6 +70,7 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <BrowserRouter>
+        <Navbar />
         <Routes>
           <Route path="/" element={<AuthPage />} />
           <Route path="/rate" element={<RatePage />} />

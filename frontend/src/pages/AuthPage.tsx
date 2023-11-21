@@ -45,7 +45,7 @@ export default function AuthPage() {
     ) {
       setError("");
       // loginMode ? loginHandler(submittedData) : signupHandler(submittedData);
-      navigate("/home"); // Comment out when backend is ready
+      navigate("/rate"); // Comment out when backend is ready
     } else {
       setError("Invalid username or password.");
     }
@@ -69,7 +69,7 @@ export default function AuthPage() {
       } else {
         console.log("SUCCESS");
         setError("");
-        navigate("/dashboard");
+        navigate("/rate");
       }
     } catch (err) {
       setError("Invalid username or password.");
