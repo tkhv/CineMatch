@@ -1,7 +1,9 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 
 import Navbar from "./pages/components/Navbar";
+import Footer from "./pages/components/Footer";
 import AuthPage from "./pages/AuthPage";
 import RatePage from "./pages/RatePage";
 import BrowsePage from "./pages/BrowsePage";
@@ -79,6 +81,7 @@ function App() {
           <Route path="/browse" element={<BrowsePage />} />
           <Route path="/party" element={<PartyPage />} />
         </Routes>
+        <Footer />
       </BrowserRouter>
     </ThemeProvider>
   );

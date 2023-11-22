@@ -33,8 +33,9 @@ export default function RatePage() {
     <div
       style={{
         backgroundColor: "black",
-        height: "100vh",
+        height: "100%",
         alignItems: "center",
+        paddingBottom: "5%",
       }}
     >
       <Container
