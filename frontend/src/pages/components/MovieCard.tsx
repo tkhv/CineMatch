@@ -14,6 +14,7 @@ import { ThumbUp, ThumbDown, VisibilityOff } from "@mui/icons-material";
 type MovieCardProps = {
   movie: Movie | null;
   incMovieIndex: () => void;
+  display: boolean;
 };
 
 export default function MovieCard(props: MovieCardProps) {
@@ -37,6 +38,7 @@ export default function MovieCard(props: MovieCardProps) {
       sx={{
         width: "30vw",
         paddingBottom: "2%",
+        marginBottom: "5%",
         marginLeft: "23%",
       }}
     >
@@ -49,6 +51,7 @@ export default function MovieCard(props: MovieCardProps) {
           fontSize: "0.9rem",
         }}
         sx={{
+          height: "200px", // Set a fixed height
           backgroundColor: (theme) =>
             theme.palette.mode === "light"
               ? theme.palette.grey[200]
@@ -64,33 +67,37 @@ export default function MovieCard(props: MovieCardProps) {
           />
         </div>
       </CardContent>
-      <CardActions>
-        <Tooltip title="Dislike">
-          <Button
-            fullWidth
-            variant={"contained"}
-            sx={{ color: "red" }}
-            onClick={nextMovie}
-          >
-            <ThumbDown />
-          </Button>
-        </Tooltip>
-        <Tooltip title="Unwatched">
-          <Button fullWidth variant={"contained"} onClick={nextMovie}>
-            <VisibilityOff />
-          </Button>
-        </Tooltip>
-        <Tooltip title="Like">
-          <Button
-            fullWidth
-            variant={"contained"}
-            sx={{ color: "green" }}
-            onClick={handleLike}
-          >
-            <ThumbUp />
-          </Button>
-        </Tooltip>
-      </CardActions>
+      {props.display ? (
+        <CardActions>
+          <Tooltip title="Dislike">
+            <Button
+              fullWidth
+              variant={"contained"}
+              sx={{ color: "red" }}
+              onClick={nextMovie}
+            >
+              <ThumbDown />
+            </Button>
+          </Tooltip>
+          <Tooltip title="Unwatched">
+            <Button fullWidth variant={"contained"} onClick={nextMovie}>
+              <VisibilityOff />
+            </Button>
+          </Tooltip>
+          <Tooltip title="Like">
+            <Button
+              fullWidth
+              variant={"contained"}
+              sx={{ color: "green" }}
+              onClick={handleLike}
+            >
+              <ThumbUp />
+            </Button>
+          </Tooltip>
+        </CardActions>
+      ) : (
+        <></>
+      )}
     </Card>
   );
 }
