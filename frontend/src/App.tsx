@@ -1,9 +1,13 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 
+import Navbar from "./pages/components/Navbar";
+import Footer from "./pages/components/Footer";
 import AuthPage from "./pages/AuthPage";
 import RatePage from "./pages/RatePage";
-import Navbar from "./pages/components/Navbar";
+import BrowsePage from "./pages/BrowsePage";
+import PartyPage from "./pages/PartyPage";
 
 const theme = createTheme({
   palette: {
@@ -74,7 +78,10 @@ function App() {
         <Routes>
           <Route path="/" element={<AuthPage />} />
           <Route path="/rate" element={<RatePage />} />
+          <Route path="/browse" element={<BrowsePage />} />
+          <Route path="/party" element={<PartyPage />} />
         </Routes>
+        <Footer />
       </BrowserRouter>
     </ThemeProvider>
   );

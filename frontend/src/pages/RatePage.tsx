@@ -1,25 +1,41 @@
-import {
-  Button,
-  Card,
-  CardActions,
-  CardContent,
-  CardHeader,
-  Container,
-  Tooltip,
-  Typography,
-} from "@mui/material";
+import { useEffect, useState } from "react";
+import { getPopularMovies, MovieList } from "../api";
+import MovieCard from "./components/MovieCard";
 
-import { ThumbUp, ThumbDown, VisibilityOff } from "@mui/icons-material";
-
-import Navbar from "./components/Navbar";
+import { Container, Typography } from "@mui/material";
 
 export default function RatePage() {
+  const [data, setData] = useState<MovieList | null>(null);
+  const [currentMovieIndex, setCurrentMovieIndex] = useState(0);
+  const [fetchPage, setFetchPage] = useState(1);
+
+  useEffect(() => {
+    const getData = async () => {
+      if (
+        currentMovieIndex === 0 ||
+        (data && currentMovieIndex >= data.length)
+      ) {
+        setData(await getPopularMovies(fetchPage));
+        setFetchPage((prevPage) => prevPage + 1);
+      }
+      if (data && currentMovieIndex >= data.length) {
+        setCurrentMovieIndex(0);
+      }
+    };
+    getData();
+  }, [currentMovieIndex]);
+
+  const incMovieIndex = () => {
+    setCurrentMovieIndex((prevIndex) => prevIndex + 1);
+  };
+
   return (
     <div
       style={{
         backgroundColor: "black",
-        height: "100vh",
+        height: "100%",
         alignItems: "center",
+        paddingBottom: "5%",
       }}
     >
       <Container
@@ -38,49 +54,12 @@ export default function RatePage() {
         </Typography>
       </Container>
       <Container maxWidth="md" component="main">
-        <Card
-          sx={{
-            width: "30vw",
-            // height: "50vh",
-            paddingBottom: "2%",
-            marginLeft: "23%",
-          }}
-        >
-          <CardHeader
-            title="TITLE HERE"
-            subheader="genre here"
-            titleTypographyProps={{ align: "center", variant: "h3" }}
-            subheaderTypographyProps={{
-              align: "center",
-            }}
-            sx={{
-              backgroundColor: (theme) =>
-                theme.palette.mode === "light"
-                  ? theme.palette.grey[200]
-                  : theme.palette.grey[700],
-            }}
+        {data && currentMovieIndex < data.length && (
+          <MovieCard
+            movie={data[currentMovieIndex]}
+            incMovieIndex={incMovieIndex}
           />
-          <CardContent sx={{ alignSelf: "center" }}>
-            Movie poster here
-          </CardContent>
-          <CardActions>
-            <Tooltip title="Dislike">
-              <Button fullWidth variant={"contained"} sx={{ color: "red" }}>
-                <ThumbDown />
-              </Button>
-            </Tooltip>
-            <Tooltip title="Unwatched">
-              <Button fullWidth variant={"contained"}>
-                <VisibilityOff />
-              </Button>
-            </Tooltip>
-            <Tooltip title="Like">
-              <Button fullWidth variant={"contained"} sx={{ color: "green" }}>
-                <ThumbUp />
-              </Button>
-            </Tooltip>
-          </CardActions>
-        </Card>
+        )}
       </Container>
     </div>
   );

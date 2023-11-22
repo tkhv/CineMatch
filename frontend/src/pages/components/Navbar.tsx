@@ -27,7 +27,7 @@ export default function Navbar() {
           <Link
             variant="button"
             color="text.primary"
-            href="#"
+            href="/browse"
             sx={{ my: 1, mx: 1.5 }}
           >
             Browse
@@ -35,7 +35,7 @@ export default function Navbar() {
           <Link
             variant="button"
             color="text.primary"
-            href="#"
+            href="/party"
             sx={{ my: 1, mx: 1.5 }}
           >
             Party
