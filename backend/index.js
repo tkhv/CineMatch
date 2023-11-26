@@ -18,8 +18,21 @@ app.use(express.json())
 
 // Define routes
 app.post('/createUser', async (req, res) => {
-	const newUserRef = db.collection('users').doc()
+	const usersRef = db.collection('users')
+	const userSnapshot = await usersRef.where('username', '==', req.body.username).get()
+	if (!userSnapshot.empty) {
+		res.status(409).send('username taken');
+		return
+	}
 
+	const emailSnapshot = await usersRef.where('email', '==', req.body.email).get()
+	if (!emailSnapshot.empty) {
+		res.status(409).send('email taken');
+		return
+	}
+
+	const newUserRef = usersRef.doc()
+	
 	await newUserRef.set({
 		username: req.body.username,
 		password: req.body.password,
