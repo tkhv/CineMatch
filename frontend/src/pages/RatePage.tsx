@@ -58,6 +58,7 @@ export default function RatePage() {
           <MovieCard
             movie={data[currentMovieIndex]}
             incMovieIndex={incMovieIndex}
+            display={true}
           />
         )}
       </Container>
