@@ -181,6 +181,41 @@ const addUserToGroup = async (username, groupname) => {
 	return await getGroup(groupname)
 }
 
+const addMovie = async (username,movie) => {
+	const user = await getUser(username)
+	if (!user) {
+		return null
+	}
+	user.ref.update({
+		movies: FieldValue.arrayUnion(movie)
+	})
+	const groupnames = Array.from(user.data().groups)
+	for (let groupname of groupnames) {
+		await addMovieToGroup(groupname,movie)
+	}
+	return await getUser(username)
+}
+
+const addMovieToGroup = async (groupname,movie) => {
+	const group = await getGroup(groupname)
+	if (!group) {
+		return null
+	}
+	group.ref.update({
+		movies: FieldValue.arrayUnion(movie)
+	})
+	return await getGroup(groupname)
+}
+
+app.post('/addMovieToUser', async (req, res) => {
+	const user = await addMovie(req.body.username,req.body.movie)
+	
+	if (!user) {
+		return res.status(409).send('Movie couldnt be added')
+	}
+	return res.json(user.data())
+})
+
 app.get('/getAllUsers', async (req, res) => {
 	const snapshot = await db.collection('users').get()
 	const allUsers = snapshot.docs.map((doc) => doc.data())
