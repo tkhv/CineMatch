@@ -32,13 +32,28 @@ app.post('/login', async (req, res) => {
 		return
 	}
 
-	const user = await getUser(req.body.username)
+	const user = (await getUser(req.body.username)).data()
 	if (!user || user.password != req.body.password) {
 		res.status(401).send('invalid username or password')
 		return
 	}
 
 	res.json(user)
+})
+
+app.delete('/deleteUser', async (req, res) => {
+	console.log(req.query.username)
+	if (!req.query.username) {
+		res.status(401).send('no username given')
+		return
+	}
+
+	const deleteResult = await deleteUser(req.query.username)
+	if (!deleteResult) {
+		return res.status(404).send('user does not exist')
+	}
+
+	return res.json('user deleted')
 })
 
 // Creates and returns a user
@@ -62,28 +77,120 @@ const getUser = async (username) => {
 	if (query.empty) {
 		return null
 	}
-	return query.docs[0].data()
+	return query.docs[0]
 }
 
-const validLoginCredentials = async (username, password) => {
-	const usersRef = db.collection('users')
-	const snapshot = await usersRef.where('username', '==', username).where('password', '==', password).get()
-
-	if (snapshot.empty) {
-		return false
+// Delete user if user exists
+const deleteUser = async (username) => {
+	const user = await getUser(username)
+	if (!user) {
+		return null
 	}
 
-	return true
+	const groupnames = Array.from(user.data().groups)
+	for (let groupname of groupnames) {
+		await removeUserFromGroup(username, groupname)
+	}
+
+
+	const userRef = user.ref.delete()
+	return 1
 }
 
+const removeUserFromGroup = async(username, groupname) => {
+	const group = await getGroup(groupname)
+	if (!group) {
+		return null
+	}
+
+	const user = await getUser(username)
+	if (!user) {
+		return null
+	}
+
+	group.ref.update({
+		users: FieldValue.arrayRemove(username)
+	})
+}
+
+app.post('/createGroup', async (req, res) => {
+	const group = await createGroup(req.body.groupname)
+	
+	if (!group) {
+		return res.status(409).send('group with this name exists')
+	}
+	return res.json(group.data())
+})
+
+app.post('/addUserToGroup', async (req, res) => {
+	const group = await addUserToGroup(req.body.username, req.body.groupname)
+	if (!group) {
+		return res.status(404).send('group or user dont exist')
+	}
 
 
+	return res.json(group.data())
+})
 
-// Define routes
+
+// Creates and returns group, returns null if group exists
+const createGroup = async (groupname) => {
+	if (await getGroup(groupname)) {
+		return null
+	}
+
+	const groupCollection = db.collection('groups')
+  const newGroupDoc = groupCollection.doc()
+	await newGroupDoc.set({
+		groupname: groupname,
+		users: []
+	})
+
+	return (await groupCollection.where('groupname', '==', groupname).limit(1).get()).docs[0]
+}
+
+const getGroup = async (groupname) => {
+	const groupCollection = db.collection('groups')
+	const query = await groupCollection.where('groupname', '==', groupname).limit(1).get()
+
+	if (query.empty) {
+		return null
+	}
+	return query.docs[0]
+}
+
+const addUserToGroup = async (username, groupname) => {
+	const group = await getGroup(groupname)
+	if (!group) {
+		return null
+	}
+
+	const user = await getUser(username)
+	if (!user) {
+		return null
+	}
+
+	group.ref.update({
+		users: FieldValue.arrayUnion(username)
+	})
+
+	user.ref.update({
+		groups: FieldValue.arrayUnion(groupname)
+	})
+
+	return await getGroup(groupname)
+}
+
 app.get('/getAllUsers', async (req, res) => {
 	const snapshot = await db.collection('users').get()
 	const allUsers = snapshot.docs.map((doc) => doc.data())
 	res.json(allUsers)
+})
+
+app.get('/getAllGroups', async (req, res) => {
+	const snapshot = await db.collection('groups').get()
+	const allGroups = snapshot.docs.map((doc) => doc.data())
+	res.json(allGroups)
 })
 
 // Start the server
