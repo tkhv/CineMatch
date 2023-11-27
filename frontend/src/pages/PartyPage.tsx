@@ -69,7 +69,7 @@ export default function PartyPage() {
                       color="text.secondary"
                       paragraph
                   >
-                      Group Recommendations
+                      Group Recommendations 🍿
                   </Typography>
                   <Stack
                       sx={{ pt: 4 }}
