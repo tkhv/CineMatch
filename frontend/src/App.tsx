@@ -8,6 +8,7 @@ import AuthPage from "./pages/AuthPage";
 import RatePage from "./pages/RatePage";
 import BrowsePage from "./pages/BrowsePage";
 import PartyPage from "./pages/PartyPage";
+import RandomPage from "./pages/RandomPage";
 
 const theme = createTheme({
   palette: {
@@ -81,6 +82,7 @@ function App() {
           <Route path="/rate" element={<RatePage />} />
           <Route path="/browse" element={<BrowsePage />} />
           <Route path="/party" element={<PartyPage />} />
+          <Route path="/random" element={<RandomPage />} />
         </Routes>
         <Footer />
       </BrowserRouter>
