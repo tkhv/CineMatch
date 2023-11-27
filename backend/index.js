@@ -16,31 +16,68 @@ const db = getFirestore()
 app.use(express.urlencoded({ extended: false }))
 app.use(express.json())
 
-// Define routes
-app.post('/createUser', async (req, res) => {
-	const usersRef = db.collection('users')
-	const userSnapshot = await usersRef.where('username', '==', req.body.username).get()
-	if (!userSnapshot.empty) {
-		res.status(409).send('username taken');
+app.post('/signup', async (req, res) => {
+	if (await getUser(req.body.username)) {
+		res.status(409).send('username taken')
 		return
 	}
+	const newUser = await createUser(req.body.username, req.body.password, req.body.email)
 
-	const emailSnapshot = await usersRef.where('email', '==', req.body.email).get()
-	if (!emailSnapshot.empty) {
-		res.status(409).send('email taken');
-		return
-	}
-
-	const newUserRef = usersRef.doc()
-	
-	await newUserRef.set({
-		username: req.body.username,
-		password: req.body.password,
-		email: req.body.email,
-	})
-
-	res.json((await newUserRef.get()).data())
+	res.json(newUser)
 })
+
+app.post('/login', async (req, res) => {
+	if (!req.body.username) {
+		res.status(401).send('no username given')
+		return
+	}
+
+	const user = await getUser(req.body.username)
+	if (!user || user.password != req.body.password) {
+		res.status(401).send('invalid username or password')
+		return
+	}
+
+	res.json(user)
+})
+
+// Creates and returns a user
+const createUser = async (username, password, email) => {
+	const usersCollection = db.collection('users')
+  const newUserDoc = usersCollection.doc()
+	await newUserDoc.set({
+		username: username,
+		password: password,
+		email: email
+	})
+	
+	return (await usersCollection.where('username', '==', username).limit(1).get()).docs[0].data()
+}
+
+// Get user with given username, returns null if user DNE
+const getUser = async (username) => {
+	const usersCollection = db.collection('users')
+	const query = await usersCollection.where('username', '==', username).limit(1).get()
+
+	if (query.empty) {
+		return null
+	}
+	return query.docs[0].data()
+}
+
+const validLoginCredentials = async (username, password) => {
+	const usersRef = db.collection('users')
+	const snapshot = await usersRef.where('username', '==', username).where('password', '==', password).get()
+
+	if (snapshot.empty) {
+		return false
+	}
+
+	return true
+}
+
+
+
 
 // Define routes
 app.get('/getAllUsers', async (req, res) => {
