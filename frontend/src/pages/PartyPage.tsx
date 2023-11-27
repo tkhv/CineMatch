@@ -73,7 +73,7 @@ export default function PartyPage() {
                             <TextField
                                 id="outlined-basic"
                                 fullWidth
-                                label="Add Group Members to Your Party"
+                                label="add group members to your party"
                                 variant="outlined"
                             />
 
