@@ -70,6 +70,7 @@ const theme = createTheme({
   },
 });
 
+// NOTE: the custom Navbar is the top banner hosting the 'Rate', 'Browse', 'Party', and 'Logout' buttons.
 function App() {
   return (
     <ThemeProvider theme={theme}>

@@ -33,7 +33,7 @@ export default function BrowsePage(): JSX.Element {
 
   useEffect(() => {
     const fetchRecs = async () => {
-      const data = await getRecs(page, sort, [12, 13, 14]);
+      const data = await getRecs(page, sort, [12, 13, 14]); // NOTE: here we are making the API call to TMDB.
       setRecs(data);
       console.log(data);
     };
