@@ -339,7 +339,7 @@ const topGroupGenre = async (groupname) => {
     return sol;
 }
 
-app.get('/topGroupGenre', async (req, res) => {
+app.post('/topGroupGenre', async (req, res) => {
 	const val = await topGroupGenre(req.body.groupname)
 	if (!val) {
 		return res.status(409).send('No favorite genre')
