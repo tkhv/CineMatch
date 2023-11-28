@@ -69,3 +69,29 @@ export async function getRecs(
   const response = await fetch(url, options);
   return fmtResults(await response.json());
 }
+
+export const fetchTopGenres = async (username: string) => {
+  try {
+    const res = await fetch(
+      "https://cinematch-7e963.ue.r.appspot.com/topUserGenre",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: username,
+        }),
+      }
+    );
+    let status: any = await res.text();
+    if (status !== "No favorite genre") {
+      console.log("FAV: " + status);
+    } else {
+      status = "[12, 13, 14]"; // default genres
+    }
+    return status;
+  } catch (err) {
+    console.log(err);
+  }
+};
