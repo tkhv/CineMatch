@@ -1,4 +1,4 @@
-# How To Generate A TMDB API Key #
+# How To Generate A TMDB API Key
 
 # Step 1: Create an Account
 Create an account using your student (or personal) email [here](https://www.themoviedb.org/signup).

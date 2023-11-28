@@ -9,7 +9,6 @@ const passwordTarget = "Pass" + randInt;
 const emailTarget = "email" + randInt + "@gmail.com";
 
 test("Signup Test", async () => {
-    // TODO: test the signup functionality... basically sign up any new user... (use some randomizer to generate a new user and password combo and make sure it works).
     // NOTE: the expect() in JEST testing acts sort of AssertEqual in JUNIT testing...
 
     const url1 = "https://cinematch-7e963.ue.r.appspot.com/signup";
