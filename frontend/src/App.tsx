@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useState } from "react";
 
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 
@@ -9,6 +10,8 @@ import RatePage from "./pages/RatePage";
 import BrowsePage from "./pages/BrowsePage";
 import PartyPage from "./pages/PartyPage";
 import RandomPage from "./pages/RandomPage";
+
+import { UserContext } from "./UserContext";
 
 const theme = createTheme({
   palette: {
@@ -73,17 +76,21 @@ const theme = createTheme({
 
 // NOTE: the custom Navbar is the top banner hosting the 'Rate', 'Browse', 'Party', and 'Logout' buttons.
 function App() {
+  const [username, setUsername] = useState<string | null>(null);
+
   return (
     <ThemeProvider theme={theme}>
       <BrowserRouter>
         <Navbar />
-        <Routes>
-          <Route path="/" element={<AuthPage />} />
-          <Route path="/rate" element={<RatePage />} />
-          <Route path="/browse" element={<BrowsePage />} />
-          <Route path="/party" element={<PartyPage />} />
-          <Route path="/random" element={<RandomPage />} />
-        </Routes>
+        <UserContext.Provider value={{ username, setUsername }}>
+          <Routes>
+            <Route path="/" element={<AuthPage />} />
+            <Route path="/rate" element={<RatePage />} />
+            <Route path="/browse" element={<BrowsePage />} />
+            <Route path="/party" element={<PartyPage />} />
+            <Route path="/random" element={<RandomPage />} />
+          </Routes>
+        </UserContext.Provider>
         <Footer />
       </BrowserRouter>
     </ThemeProvider>

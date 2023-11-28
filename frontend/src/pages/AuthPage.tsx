@@ -1,13 +1,17 @@
 import * as React from "react";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 
 import styles from "./AuthPage.module.css";
 
 import { Button, TextField, Box, Typography } from "@mui/material";
+import { UserContext } from "../UserContext";
+
 const URL = "https://cinematch-7e963.ue.r.appspot.com";
+
 export default function AuthPage() {
   const navigate = useNavigate();
+  const { username, setUsername }: any = useContext(UserContext);
 
   const [loginMode, setLoginMode] = useState(true);
   const signInLabel = loginMode ? "Sign In" : "Sign Up";
@@ -68,6 +72,7 @@ export default function AuthPage() {
       if (status.message) {
         setError("Invalid username or password.");
       } else {
+        setUsername(submittedData.username);
         console.log("SUCCESS");
         setError("");
         navigate("/rate");
