@@ -21,7 +21,6 @@ type MovieCardProps = {
 
 export default function MovieCard(props: MovieCardProps) {
   const { username }: any = useContext(UserContext);
-  console.log(username);
   const title = props.movie?.title;
   const overview = props.movie?.overview;
   const posterURL = props.movie?.posterURL;

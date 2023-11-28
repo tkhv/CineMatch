@@ -73,7 +73,7 @@ export default function RandomPage() {
           color="text.secondary"
           component="p"
         >
-          Here is your random movie!
+          Here is your random movie, based on your preferences!
         </Typography>
       </Container>
       <Container maxWidth="md" component="main">

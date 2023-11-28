@@ -55,7 +55,7 @@ export default function BrowsePage(): JSX.Element {
         } else {
           status = "[12, 13, 14]"; // default genres
         }
-        console.log("MAKIGN CALL WITH: " + status);
+        console.log("MAKING CALL WITH: " + status);
         const data = await getRecs(page, sort, status); // NOTE: here we are making the API call to TMDB.
         setRecs(data);
         console.log(data);
