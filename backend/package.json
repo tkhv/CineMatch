@@ -11,10 +11,11 @@
 	"author": "Chidozie Nnaduruaku",
 	"license": "ISC",
 	"dependencies": {
+		"cors": "^2.8.5",
 		"express": "^4.18.2",
-    "firebase-admin": "^11.11.0"
+		"firebase-admin": "^11.11.0"
 	},
-  "devDependencies": {
-    "nodemon": "^3.0.1"
-  }
+	"devDependencies": {
+		"nodemon": "^3.0.1"
+	}
 }

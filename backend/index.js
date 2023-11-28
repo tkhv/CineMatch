@@ -25,6 +25,7 @@ app.post('/signup', async (req, res) => {
 		res.status(409).send('username taken')
 		return
 	}
+	console.log(req.body)
 	const newUser = await createUser(req.body.username, req.body.password, req.body.email)
 
 	res.json(newUser)
@@ -174,10 +175,16 @@ const addUserToGroup = async (username, groupname) => {
 		return null
 	}
 
+	
 	group.ref.update({
-		users: FieldValue.arrayUnion(username)
+		users: FieldValue.arrayUnion(username),
 	})
 
+	const userMovies = Array.from(user.data().movies || [])
+	const groupMovies = Array.from(group.data().movies || []).concat(userMovies)
+	group.ref.update({
+		movies: groupMovies
+	})
 	user.ref.update({
 		groups: FieldValue.arrayUnion(groupname)
 	})
@@ -190,12 +197,23 @@ const addMovie = async (username,movie) => {
 	if (!user) {
 		return null
 	}
+	const userMovies = Array.from(user.data().movies || [])
+	userMovies.push(movie)
 	user.ref.update({
-		movies: FieldValue.arrayUnion(movie)
+		movies: userMovies
 	})
-	const groupnames = Array.from(user.data().groups)
+
+  // -- 
+	const groupnames = Array.from(user.data().groups || [])
 	for (let groupname of groupnames) {
 		await addMovieToGroup(groupname,movie)
+// 
+// 	if(user.data().groups!=null){
+// 		const groupnames = Array.from(user.data().groups)
+// 		for (let groupname of groupnames) {
+// 			await addMovieToGroup(groupname,movie)
+// 		}
+// 
 	}
 	return await getUser(username)
 }
@@ -205,14 +223,17 @@ const addMovieToGroup = async (groupname,movie) => {
 	if (!group) {
 		return null
 	}
+
+	const groupMovies = Array.from(group.data().movies || [])
+	groupMovies.push(movie)
 	group.ref.update({
-		movies: FieldValue.arrayUnion(movie)
+		movies: groupMovies
 	})
 	return await getGroup(groupname)
 }
 
 app.post('/addMovieToUser', async (req, res) => {
-	const user = await addMovie(req.body.username,req.body.movie)
+	const user = await addMovie(req.body.username, parseInt(req.body.movie))
 	
 	if (!user) {
 		return res.status(409).send('Movie couldnt be added')
@@ -244,10 +265,34 @@ const topUserGenre = async (username) => {
             maxCount = modeMap[el];
         }
     }
-    return maxEl;
+	var maxEl2 = movieNums[0], maxCount2 = 0;
+    for(var i = 0; i < movieNums.length; i++)
+    {
+        var el = movieNums[i];
+		if(el==maxEl)continue;  
+        if(modeMap[el] > maxCount2)
+        {
+            maxEl2 = el;
+            maxCount2 = modeMap[el];
+        }
+    }
+	var maxEl3 = movieNums[0], maxCount3 = 0;
+    for(var i = 0; i < movieNums.length; i++)
+    {
+        var el = movieNums[i];
+		if(el==maxEl)continue; 
+		if(el==maxEl2)continue;  
+        if(modeMap[el] > maxCount3)
+        {
+            maxEl3 = el;
+            maxCount3 = modeMap[el];
+        }
+    }
+	const sol = [maxEl,maxEl2,maxEl3];
+    return sol;
 }
 
-app.get('/topUserGenre', async (req, res) => {
+app.post('/topUserGenre', async (req, res) => {
 	const val = await topUserGenre(req.body.username)
 	if (!val) {
 		return res.status(409).send('No favorite genre')
@@ -264,7 +309,7 @@ const topGroupGenre = async (groupname) => {
 	if(movieNums.length == 0)
         return null;
     var modeMap = {};
-    var maxEl = movieNums[0], maxCount = 1;
+    var maxEl = movieNums[0], maxCount = 0;
     for(var i = 0; i < movieNums.length; i++)
     {
         var el = movieNums[i];
@@ -278,10 +323,34 @@ const topGroupGenre = async (groupname) => {
             maxCount = modeMap[el];
         }
     }
-    return maxEl;
+	var maxEl2 = movieNums[0], maxCount2 = 0;
+    for(var i = 0; i < movieNums.length; i++)
+    {
+        var el = movieNums[i];
+		if(el==maxEl)continue;  
+        if(modeMap[el] > maxCount2)
+        {
+            maxEl2 = el;
+            maxCount2 = modeMap[el];
+        }
+    }
+	var maxEl3 = movieNums[0], maxCount3 = 1;
+    for(var i = 0; i < movieNums.length; i++)
+    {
+        var el = movieNums[i];
+		if(el==maxEl)continue; 
+		if(el==maxEl2)continue;  
+        if(modeMap[el] > maxCount3)
+        {
+            maxEl3 = el;
+            maxCount3 = modeMap[el];
+        }
+    }
+	const sol = [maxEl,maxEl2,maxEl3];
+    return sol;
 }
 
-app.get('/topGroupGenre', async (req, res) => {
+app.post('/topGroupGenre', async (req, res) => {
 	const val = await topGroupGenre(req.body.groupname)
 	if (!val) {
 		return res.status(409).send('No favorite genre')
