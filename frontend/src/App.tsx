@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 
@@ -77,12 +77,28 @@ const theme = createTheme({
 // NOTE: the custom Navbar is the top banner hosting the 'Rate', 'Browse', 'Party', and 'Logout' buttons.
 function App() {
   const [username, setUsername] = useState<string | null>(null);
+  // Load the username from local storage when the component mounts
+  useEffect(() => {
+    const storedUsername = localStorage.getItem("username");
+    if (storedUsername) {
+      setUsername(storedUsername);
+    }
+  }, []);
+
+  // Save the username to local storage whenever it changes
+  useEffect(() => {
+    if (username) {
+      localStorage.setItem("username", username);
+    } else {
+      localStorage.removeItem("username");
+    }
+  }, [username]);
 
   return (
-    <ThemeProvider theme={theme}>
-      <BrowserRouter>
-        <Navbar />
-        <UserContext.Provider value={{ username, setUsername }}>
+    <UserContext.Provider value={{ username, setUsername }}>
+      <ThemeProvider theme={theme}>
+        <BrowserRouter>
+          <Navbar />
           <Routes>
             <Route path="/" element={<AuthPage />} />
             <Route path="/rate" element={<RatePage />} />
@@ -90,10 +106,10 @@ function App() {
             <Route path="/party" element={<PartyPage />} />
             <Route path="/random" element={<RandomPage />} />
           </Routes>
-        </UserContext.Provider>
-        <Footer />
-      </BrowserRouter>
-    </ThemeProvider>
+          <Footer />
+        </BrowserRouter>
+      </ThemeProvider>
+    </UserContext.Provider>
   );
 }
 

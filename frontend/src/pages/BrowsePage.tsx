@@ -1,3 +1,5 @@
+import { useContext } from "react";
+import { UserContext } from "../UserContext";
 import { useEffect, useState } from "react";
 
 import { getRecs, Movie } from "../api";
@@ -16,6 +18,7 @@ import {
 } from "@mui/material";
 
 export default function BrowsePage(): JSX.Element {
+  const { username }: any = useContext(UserContext);
   const [recs, setRecs] = useState<Movie[]>([]);
   const [sort, setSort] = useState<"popularity.desc" | "vote_count.desc">(
     "vote_count.desc"
@@ -33,12 +36,35 @@ export default function BrowsePage(): JSX.Element {
 
   useEffect(() => {
     const fetchRecs = async () => {
-      const data = await getRecs(page, sort, [12, 13, 14]); // NOTE: here we are making the API call to TMDB.
-      setRecs(data);
-      console.log(data);
+      try {
+        const res = await fetch(
+          "https://cinematch-7e963.ue.r.appspot.com/topUserGenre",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              username: username,
+            }),
+          }
+        );
+        let status: any = await res.text();
+        if (status !== "No favorite genre") {
+          console.log("FAV: " + status);
+        } else {
+          status = "[12, 13, 14]"; // default genres
+        }
+        console.log("MAKIGN CALL WITH: " + status);
+        const data = await getRecs(page, sort, status); // NOTE: here we are making the API call to TMDB.
+        setRecs(data);
+        console.log(data);
+      } catch (err) {
+        console.log(err);
+      }
     };
     fetchRecs();
-  }, [sort, page]);
+  }, [sort, page, username]);
 
   return (
     <div
@@ -97,7 +123,7 @@ export default function BrowsePage(): JSX.Element {
               <MovieCard
                 movie={movie}
                 incMovieIndex={() => {}}
-                display={false}
+                display={true}
               />
             </Grid>
           ))}
