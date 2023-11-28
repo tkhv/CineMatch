@@ -175,7 +175,8 @@ const addUserToGroup = async (username, groupname) => {
 	}
 
 	group.ref.update({
-		users: FieldValue.arrayUnion(username)
+		users: FieldValue.arrayUnion(username),
+		movies: FieldValue.arrayUnion(...user.data().movies)
 	})
 
 	user.ref.update({
@@ -193,7 +194,7 @@ const addMovie = async (username,movie) => {
 	user.ref.update({
 		movies: FieldValue.arrayUnion(movie)
 	})
-	const groupnames = Array.from(user.data().groups)
+	const groupnames = Array.from(user.data().groups || [])
 	for (let groupname of groupnames) {
 		await addMovieToGroup(groupname,movie)
 	}
@@ -212,7 +213,7 @@ const addMovieToGroup = async (groupname,movie) => {
 }
 
 app.post('/addMovieToUser', async (req, res) => {
-	const user = await addMovie(req.body.username,req.body.movie)
+	const user = await addMovie(req.body.username, parseInt(req.body.movie))
 	
 	if (!user) {
 		return res.status(409).send('Movie couldnt be added')
