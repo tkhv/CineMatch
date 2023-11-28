@@ -216,6 +216,75 @@ app.post('/addMovieToUser', async (req, res) => {
 	return res.json(user.data())
 })
 
+
+const topUserGenre = async (username) => {
+	const user = await getUser(username)
+	if (!user) {
+		return null
+	}
+	const movieNums = Array.from(user.data().movies)
+	if(movieNums.length == 0)
+        return null;
+    var modeMap = {};
+    var maxEl = movieNums[0], maxCount = 1;
+    for(var i = 0; i < movieNums.length; i++)
+    {
+        var el = movieNums[i];
+        if(modeMap[el] == null)
+            modeMap[el] = 1;
+        else
+            modeMap[el]++;  
+        if(modeMap[el] > maxCount)
+        {
+            maxEl = el;
+            maxCount = modeMap[el];
+        }
+    }
+    return maxEl;
+}
+
+app.get('/topUserGenre', async (req, res) => {
+	const val = await topUserGenre(req.body.username)
+	if (!val) {
+		return res.status(409).send('No favorite genre')
+	}
+	return res.json(val)
+})
+
+const topGroupGenre = async (groupname) => {
+	const group = await getGroup(groupname)
+	if (!group) {
+		return null
+	}
+	const movieNums = Array.from(group.data().movies)
+	if(movieNums.length == 0)
+        return null;
+    var modeMap = {};
+    var maxEl = movieNums[0], maxCount = 1;
+    for(var i = 0; i < movieNums.length; i++)
+    {
+        var el = movieNums[i];
+        if(modeMap[el] == null)
+            modeMap[el] = 1;
+        else
+            modeMap[el]++;  
+        if(modeMap[el] > maxCount)
+        {
+            maxEl = el;
+            maxCount = modeMap[el];
+        }
+    }
+    return maxEl;
+}
+
+app.get('/topGroupGenre', async (req, res) => {
+	const val = await topGroupGenre(req.body.groupname)
+	if (!val) {
+		return res.status(409).send('No favorite genre')
+	}
+	return res.json(val)
+})
+
 app.get('/getAllUsers', async (req, res) => {
 	const snapshot = await db.collection('users').get()
 	const allUsers = snapshot.docs.map((doc) => doc.data())
