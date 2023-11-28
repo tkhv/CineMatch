@@ -1,16 +1,20 @@
 const express = require('express')
+const cors = require('cors')
 const { initializeApp, applicationDefault, cert } = require('firebase-admin/app')
 const { getFirestore, Timestamp, FieldValue, Filter } = require('firebase-admin/firestore')
+const serviceAccount = require('./credentials/cinematch-7e963-firebase-adminsdk-zyvl3-fa0f5e1654.json')
 
 const app = express()
 
-const serviceAccount = require('./credentials/cinematch-7e963-firebase-adminsdk-zyvl3-fa0f5e1654.json')
+
 
 initializeApp({
 	credential: cert(serviceAccount),
 })
 
 const db = getFirestore()
+
+app.use(cors({origin: '*'}))
 
 //Body parser
 app.use(express.urlencoded({ extended: false }))
@@ -171,7 +175,8 @@ const addUserToGroup = async (username, groupname) => {
 	}
 
 	group.ref.update({
-		users: FieldValue.arrayUnion(username)
+		users: FieldValue.arrayUnion(username),
+		movies: FieldValue.arrayUnion(...user.data().movies)
 	})
 
 	user.ref.update({
@@ -189,9 +194,18 @@ const addMovie = async (username,movie) => {
 	user.ref.update({
 		movies: FieldValue.arrayUnion(movie)
 	})
-	const groupnames = Array.from(user.data().groups)
+
+  // -- 
+	const groupnames = Array.from(user.data().groups || [])
 	for (let groupname of groupnames) {
 		await addMovieToGroup(groupname,movie)
+// 
+// 	if(user.data().groups!=null){
+// 		const groupnames = Array.from(user.data().groups)
+// 		for (let groupname of groupnames) {
+// 			await addMovieToGroup(groupname,movie)
+// 		}
+// 
 	}
 	return await getUser(username)
 }
@@ -208,7 +222,7 @@ const addMovieToGroup = async (groupname,movie) => {
 }
 
 app.post('/addMovieToUser', async (req, res) => {
-	const user = await addMovie(req.body.username,req.body.movie)
+	const user = await addMovie(req.body.username, parseInt(req.body.movie))
 	
 	if (!user) {
 		return res.status(409).send('Movie couldnt be added')
@@ -240,7 +254,31 @@ const topUserGenre = async (username) => {
             maxCount = modeMap[el];
         }
     }
-    return maxEl;
+	var maxEl2 = movieNums[0], maxCount2 = 0;
+    for(var i = 0; i < movieNums.length; i++)
+    {
+        var el = movieNums[i];
+		if(el==maxEl)continue;  
+        if(modeMap[el] > maxCount2)
+        {
+            maxEl2 = el;
+            maxCount2 = modeMap[el];
+        }
+    }
+	var maxEl3 = movieNums[0], maxCount3 = 0;
+    for(var i = 0; i < movieNums.length; i++)
+    {
+        var el = movieNums[i];
+		if(el==maxEl)continue; 
+		if(el==maxEl2)continue;  
+        if(modeMap[el] > maxCount3)
+        {
+            maxEl3 = el;
+            maxCount3 = modeMap[el];
+        }
+    }
+	const sol = [maxEl,maxEl2,maxEl3];
+    return sol;
 }
 
 app.get('/topUserGenre', async (req, res) => {
@@ -260,7 +298,7 @@ const topGroupGenre = async (groupname) => {
 	if(movieNums.length == 0)
         return null;
     var modeMap = {};
-    var maxEl = movieNums[0], maxCount = 1;
+    var maxEl = movieNums[0], maxCount = 0;
     for(var i = 0; i < movieNums.length; i++)
     {
         var el = movieNums[i];
@@ -274,7 +312,31 @@ const topGroupGenre = async (groupname) => {
             maxCount = modeMap[el];
         }
     }
-    return maxEl;
+	var maxEl2 = movieNums[0], maxCount2 = 0;
+    for(var i = 0; i < movieNums.length; i++)
+    {
+        var el = movieNums[i];
+		if(el==maxEl)continue;  
+        if(modeMap[el] > maxCount2)
+        {
+            maxEl2 = el;
+            maxCount2 = modeMap[el];
+        }
+    }
+	var maxEl3 = movieNums[0], maxCount3 = 1;
+    for(var i = 0; i < movieNums.length; i++)
+    {
+        var el = movieNums[i];
+		if(el==maxEl)continue; 
+		if(el==maxEl2)continue;  
+        if(modeMap[el] > maxCount3)
+        {
+            maxEl3 = el;
+            maxCount3 = modeMap[el];
+        }
+    }
+	const sol = [maxEl,maxEl2,maxEl3];
+    return sol;
 }
 
 app.get('/topGroupGenre', async (req, res) => {
@@ -297,7 +359,9 @@ app.get('/getAllGroups', async (req, res) => {
 	res.json(allGroups)
 })
 
+const PORT = process.env.PORT || 8080;
+
 // Start the server
-app.listen(3000, () => {
-	console.log('Server started on port 3000')
+app.listen(PORT, () => {
+	console.log(`Server started on port ${PORT}`)
 })
