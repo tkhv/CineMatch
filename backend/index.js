@@ -25,6 +25,7 @@ app.post('/signup', async (req, res) => {
 		res.status(409).send('username taken')
 		return
 	}
+	console.log(req.body)
 	const newUser = await createUser(req.body.username, req.body.password, req.body.email)
 
 	res.json(newUser)
@@ -179,13 +180,11 @@ const addUserToGroup = async (username, groupname) => {
 		users: FieldValue.arrayUnion(username),
 	})
 
-	const movieArr = Array.from(user.data().movies || [])
-	for (let movie of movieArr) {
-		group.ref.update({
-			movies: FieldValue.arrayUnion(movie)
-		})
-	}
-
+	const userMovies = Array.from(user.data().movies || [])
+	const groupMovies = Array.from(group.data().movies || []).concat(userMovies)
+	group.ref.update({
+		movies: groupMovies
+	})
 	user.ref.update({
 		groups: FieldValue.arrayUnion(groupname)
 	})
@@ -198,8 +197,10 @@ const addMovie = async (username,movie) => {
 	if (!user) {
 		return null
 	}
+	const userMovies = Array.from(user.data().movies || [])
+	userMovies.push(movie)
 	user.ref.update({
-		movies: FieldValue.arrayUnion(movie)
+		movies: userMovies
 	})
 
   // -- 
@@ -222,8 +223,11 @@ const addMovieToGroup = async (groupname,movie) => {
 	if (!group) {
 		return null
 	}
+
+	const groupMovies = Array.from(group.data().movies || [])
+	groupMovies.push(movie)
 	group.ref.update({
-		movies: FieldValue.arrayUnion(movie)
+		movies: groupMovies
 	})
 	return await getGroup(groupname)
 }
