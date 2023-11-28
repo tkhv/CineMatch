@@ -1,16 +1,20 @@
 const express = require('express')
+const cors = require('cors')
 const { initializeApp, applicationDefault, cert } = require('firebase-admin/app')
 const { getFirestore, Timestamp, FieldValue, Filter } = require('firebase-admin/firestore')
+const serviceAccount = require('./credentials/cinematch-7e963-firebase-adminsdk-zyvl3-fa0f5e1654.json')
 
 const app = express()
 
-const serviceAccount = require('./credentials/cinematch-7e963-firebase-adminsdk-zyvl3-fa0f5e1654.json')
+
 
 initializeApp({
 	credential: cert(serviceAccount),
 })
 
 const db = getFirestore()
+
+app.use(cors({origin: '*'}))
 
 //Body parser
 app.use(express.urlencoded({ extended: false }))
