@@ -193,9 +193,11 @@ const addMovie = async (username,movie) => {
 	user.ref.update({
 		movies: FieldValue.arrayUnion(movie)
 	})
-	const groupnames = Array.from(user.data().groups)
-	for (let groupname of groupnames) {
-		await addMovieToGroup(groupname,movie)
+	if(user.data().groups!=null){
+		const groupnames = Array.from(user.data().groups)
+		for (let groupname of groupnames) {
+			await addMovieToGroup(groupname,movie)
+		}
 	}
 	return await getUser(username)
 }
