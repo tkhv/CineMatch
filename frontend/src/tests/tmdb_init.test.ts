@@ -17,6 +17,7 @@ test("TMDB Connection Initialization", async () => {
 
     const response = await fetch(url, options);
     expect(response.status).toBe(200);
+    // const response = fetch(url, options);
     // response
     //     .then((resp) => expect(resp.status).toBe(200))
     //     .catch((err) => expect(err.status).toBe(200))
