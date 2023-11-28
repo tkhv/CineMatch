@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import styles from "./AuthPage.module.css";
 
 import { Button, TextField, Box, Typography } from "@mui/material";
-
+const URL = "https://cinematch-7e963.ue.r.appspot.com";
 export default function AuthPage() {
   const navigate = useNavigate();
 
@@ -44,8 +44,8 @@ export default function AuthPage() {
       (loginMode || submittedData.password === submittedData.retypedPassword)
     ) {
       setError("");
-      // loginMode ? loginHandler(submittedData) : signupHandler(submittedData);
-      navigate("/rate"); // Comment out when backend is ready
+      loginMode ? loginHandler(submittedData) : signupHandler(submittedData);
+      // navigate("/rate"); // Comment out when backend is ready
     } else {
       setError("Invalid username or password.");
     }
@@ -53,7 +53,7 @@ export default function AuthPage() {
 
   const loginHandler = async (submittedData: submitData) => {
     try {
-      const res = await fetch("{% url 'api:user-login' %}", {
+      const res = await fetch(URL + "/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -61,6 +61,7 @@ export default function AuthPage() {
         body: JSON.stringify({
           username: submittedData.username,
           password: submittedData.password,
+          email: "a@a.com",
         }),
       });
       let status = await res.json();
@@ -79,19 +80,17 @@ export default function AuthPage() {
 
   const signupHandler = async (submittedData: submitData) => {
     try {
-      const res = await fetch(
-        "https://project1cs3300.ue.r.appspot.com/api/user/signup",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            username: submittedData.username,
-            password: submittedData.password,
-          }),
-        }
-      );
+      const res = await fetch(URL + "/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: submittedData.username,
+          password: submittedData.password,
+          email: "a@a.com",
+        }),
+      });
       let status = await res.json();
       if (status.message === "user already exists") {
         console.log(status);
