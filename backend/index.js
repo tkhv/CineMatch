@@ -174,10 +174,17 @@ const addUserToGroup = async (username, groupname) => {
 		return null
 	}
 
+	
 	group.ref.update({
 		users: FieldValue.arrayUnion(username),
-		movies: FieldValue.arrayUnion(...user.data().movies)
 	})
+
+	const movieArr = Array.from(user.data().movies || [])
+	for (let movie of movieArr) {
+		group.ref.update({
+			movies: FieldValue.arrayUnion(movie)
+		})
+	}
 
 	user.ref.update({
 		groups: FieldValue.arrayUnion(groupname)
