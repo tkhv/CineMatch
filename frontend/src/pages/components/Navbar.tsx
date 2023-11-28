@@ -35,6 +35,14 @@ export default function Navbar() {
           <Link
             variant="button"
             color="text.primary"
+            href="/random"
+            sx={{ my: 1, mx: 1.5 }}
+          >
+            Random
+          </Link>
+          <Link
+            variant="button"
+            color="text.primary"
             href="/party"
             sx={{ my: 1, mx: 1.5 }}
           >
