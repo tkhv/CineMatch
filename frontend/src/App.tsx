@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useState, useEffect } from "react";
 
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 
@@ -8,6 +9,9 @@ import AuthPage from "./pages/AuthPage";
 import RatePage from "./pages/RatePage";
 import BrowsePage from "./pages/BrowsePage";
 import PartyPage from "./pages/PartyPage";
+import RandomPage from "./pages/RandomPage";
+
+import { UserContext } from "./UserContext";
 
 const theme = createTheme({
   palette: {
@@ -72,19 +76,40 @@ const theme = createTheme({
 
 // NOTE: the custom Navbar is the top banner hosting the 'Rate', 'Browse', 'Party', and 'Logout' buttons.
 function App() {
+  const [username, setUsername] = useState<string | null>(null);
+  // Load the username from local storage when the component mounts
+  useEffect(() => {
+    const storedUsername = localStorage.getItem("username");
+    if (storedUsername) {
+      setUsername(storedUsername);
+    }
+  }, []);
+
+  // Save the username to local storage whenever it changes
+  useEffect(() => {
+    if (username) {
+      localStorage.setItem("username", username);
+    } else {
+      localStorage.removeItem("username");
+    }
+  }, [username]);
+
   return (
-    <ThemeProvider theme={theme}>
-      <BrowserRouter>
-        <Navbar />
-        <Routes>
-          <Route path="/" element={<AuthPage />} />
-          <Route path="/rate" element={<RatePage />} />
-          <Route path="/browse" element={<BrowsePage />} />
-          <Route path="/party" element={<PartyPage />} />
-        </Routes>
-        <Footer />
-      </BrowserRouter>
-    </ThemeProvider>
+    <UserContext.Provider value={{ username, setUsername }}>
+      <ThemeProvider theme={theme}>
+        <BrowserRouter>
+          <Navbar />
+          <Routes>
+            <Route path="/" element={<AuthPage />} />
+            <Route path="/rate" element={<RatePage />} />
+            <Route path="/browse" element={<BrowsePage />} />
+            <Route path="/party" element={<PartyPage />} />
+            <Route path="/random" element={<RandomPage />} />
+          </Routes>
+          <Footer />
+        </BrowserRouter>
+      </ThemeProvider>
+    </UserContext.Provider>
   );
 }
 
