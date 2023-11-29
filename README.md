@@ -4,7 +4,10 @@ GT CS3300 Project 2, Group 5
 
 ## Installation _(Frontend)_
 
-First, get a (free) TMDB `API Read Access Token` from [here](https://www.themoviedb.org/settings/api). 
+This project uses Node Package Manager
+
+First, get a (free) TMDB `API Read Access Token` from [here](https://www.themoviedb.org/settings/api).
+    note: may have to create an account with TMDB
 Then, add it to your `frontend` `.env`:
 
 ```
