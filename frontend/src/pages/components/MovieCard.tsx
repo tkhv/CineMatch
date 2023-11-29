@@ -1,3 +1,5 @@
+import { useContext } from "react";
+import { UserContext } from "../../UserContext";
 import { Movie } from "../../api";
 
 import {
@@ -18,13 +20,31 @@ type MovieCardProps = {
 };
 
 export default function MovieCard(props: MovieCardProps) {
+  const { username }: any = useContext(UserContext);
   const title = props.movie?.title;
   const overview = props.movie?.overview;
   const posterURL = props.movie?.posterURL;
 
-  const handleLike = () => {
-    console.log("Liked");
-    // Add movie to watched hashmap
+  const handleLike = async () => {
+    console.log("Hit like");
+    try {
+      const res = await fetch(
+        "https://cinematch-7e963.ue.r.appspot.com/addMovieToUser",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: username,
+            movie: props?.movie?.genre,
+          }),
+        }
+      );
+      let status = await res.text();
+    } catch (err) {
+      console.log(err);
+    }
     nextMovie();
   };
 
